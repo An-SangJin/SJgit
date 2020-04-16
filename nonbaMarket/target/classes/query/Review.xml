@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.review.dao.ReviewDao">
+	<select id="reviewAfterList" parameterType="int" resultType="review">
+		SELECT re_num, r.p_num, p_img, p_name, re_title, re_content, gpa,p_price,
+		to_char(re_regdate,'YYYY.MM.DD') as re_regdate, re_img
+		FROM review r inner join product p
+		on r.p_num = p.p_num where m_num=#{m_num}
+		ORDER BY to_number(re_num) desc
+	</select>
+	
+	<insert id="reviewInsert" parameterType="review">
+		INSERT INTO review(re_num,m_num,p_num,re_title,re_content,gpa,re_img)
+		VALUES(review_seq.nextval,#{m_num},#{p_num},#{re_title},#{re_content},#{gpa},#{re_img})
+	</insert>
+	
+	<update id="reviewUpdate" parameterType="review">
+		UPDATE review
+		SET re_title = #{re_title}, re_content = #{re_content}, gpa = #{gpa} 
+		<if test="re_img !=''">
+			,re_img = #{re_img} 
+		</if>
+		WHERE re_num = #{re_num}
+	</update>
+	
+	<select id="reviewSearch" parameterType="java.lang.String" resultType="review">
+		SELECT re_num, m_num, p_num, re_title, re_content, gpa
+		,re_regdate, re_img, re_cnt
+		FROM review WHERE re_num = #{re_num}
+	</select>
+	
+	<delete id="reviewDelete" parameterType="java.lang.String">
+		DELETE FROM review
+		WHERE re_num = #{re_num}
+	</delete>
+	
+	<select id="reviewList" parameterType="review" resultType="review">
+		<![CDATA[SELECT rnum,re_num,m_num,m_name,p_num,re_title,re_content,gpa,to_char(re_regdate,'YYYY-MM-DD') re_regdate,re_img,re_cnt
+        from(select list.*,rownum as rnum from(SELECT 
+			r.re_num,m.m_name,m.m_num,r.p_num,r.re_title,r.re_content,r.gpa,r.re_regdate,r.re_img,r.re_cnt 
+		from review r inner join member m on r.m_num = m.m_num where p_num = #{p_num} order by to_number(re_num) desc)list 
+		where rownum<=#{pageNum}*#{amount}) where rnum>(#{pageNum}-1)*#{amount}]]>
+	</select>
+	
+	<select id="reviewListCnt" parameterType="review" resultType="int">
+		select count(*) from review where p_num = #{p_num}
+	</select>
+	
+	<select id="updateForm" parameterType="review" resultType="review">
+		select * from review where re_num = #{re_num}
+	</select>
+	
+	<update id="reviewUpdateB" parameterType="review">
+   		update review
+   		set re_title = #{re_title}
+   		,re_content = #{re_content}
+   		,gpa = #{gpa}
+   		<if test="re_img!=''">
+   			,re_img = #{re_img}
+   		</if>
+   		,re_regdate = sysdate where re_num = #{re_num}
+   	</update>
+   	
+   	
+   	
+   	
+   	
+   	
+   	<!--게시판 리스트  기본 조회  -->
+	<select id = "reviewList2" parameterType="review" resultType="review">
+	<![CDATA[
+		select 
+		re_num,re_title, m_id,to_char(re_regdate,'YYYY-MM-DD') as re_regdate,gpa,
+		m_num ,p_num,re_content,re_img,re_cnt
+			from ( 
+            	select  review.*,  rownum as rnum
+                from (select
+                   re_num,re_title, m_id, re_regdate,gpa,
+                    re.m_num,p_num,re_content,re_img,re_cnt
+                    from review re inner join member m on re.m_num = m.m_num order by re_regdate desc) review
+    	       where  ]]>
+    	<![CDATA[ rownum <= #{pageNum} * #{amount} 
+			) review
+			where rnum > (#{pageNum} - 1) * #{amount}
+		]]>
+	</select>
+	
+	<!-- 전체 레코드 수 조회 (total) -->
+	<select id = "reviewListCnt2" parameterType="review" resultType="int">
+		select count(*) from review
+	</select>
+	
+	<!--조회수  -->
+	<update id="reviewCnt" parameterType="review">
+		update review set re_cnt = re_cnt + 1 where re_num= #{re_num}
+	</update>
+
+	<select id = "reviewConfirm" parameterType="review" resultType="int">
+		select count(*) from detail WHERE o_num 
+		in (select o_num FROM orders WHERE m_num=#{m_num}) and ans_state = 'X'
+	</select>
+
+	
+	<select id = "revieworderList" parameterType="review" resultType="review">
+		select o.o_num,to_char(o_regdate,'YYYY-MM-DD') as o_regdate,d_name, 
+		d_amount,d_amount*d_price as d_price, ans_state, p_num
+		from orders o inner join detail d
+		on d.o_num = o.o_num
+		where m_num=#{m_num} and ans_state = 'X' order by o_num desc
+	</select>
+	
+	<insert id="reviewupload" parameterType="review">
+		<selectKey keyProperty="re_num" resultType="java.lang.String" order="BEFORE">
+			select review_seq.nextval from dual 
+		</selectKey>
+		insert into review(re_num,m_num,p_num,re_title,re_content,gpa,re_regdate,re_img,re_cnt)
+		values(#{re_num},#{m_num},#{p_num},#{re_title},#{re_content},#{gpa},sysdate,#{re_img},0)
+	</insert>
+
+	<update id="detailupdate" parameterType="review">
+		update detail 
+			set ans_state = 'O' 
+		where o_num = #{o_num} and p_num = #{p_num}
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	<update id="cntUpdate" parameterType="String">
+         update review set re_cnt=re_cnt+1 where re_num = #{re_num}
+      </update>
+      
+      <select id="reviewCnt2" parameterType="String" resultType="String">
+          select re_cnt from review where re_num = #{re_num}
+      </select>
+</mapper>

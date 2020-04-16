@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.admin.product_inq.dao.AdminProduct_inqDao">
+	
+	<select id="product_inqList" parameterType="adminProduct_inq" resultType="adminProduct_inq">
+		select pi_num, pi.m_num, substr(m_name,1,1)||lpad('*',length(m_name)-2,'*')||substr(m_name,length(m_name),1) as m_name
+		, substr(m_id,1,1)||lpad('*',length(m_id)-2,'*')||substr(m_id,length(m_id),1) as m_id
+		,p.p_num, p_name, pi_title, pi_content, to_char(pi_regdate,'YYYY-MM-DD') as pi_regdate,
+		pi_emailsend, pi_smssend, pi_secret, pi_state
+		FROM product_inq pi INNER JOIN member m
+		on m.m_num = pi.m_num
+		INNER JOIN product p
+		on p.p_num = pi.p_num
+		WHERE pi_repstep = 0
+		<if test="search == 'm_name'">
+			and m_name LIKE '%'||#{keyword}||'%'
+		</if>
+		<if test="search == 'pi_title'">
+			and pi_title LIKE '%'||#{keyword}||'%'
+		</if>
+		<if test="search == 're_content'">
+			and pi_content LIKE '%'||#{keyword}||'%'
+		</if>
+		<if test="search == 're_regdate'">
+			and to_char(pi_regdate,'YYYY-MM-DD') BETWEEN #{startDate} AND #{endDate}
+		</if>
+		<if test="search == 'p_name'">
+			and p_name LIKE '%'||#{keyword}||'%'
+		</if>
+		order by pi_state desc,pi_num desc
+	</select>
+
+	<update id="deleteProduct_inq" parameterType="int">
+		UPDATE product_inq
+		SET pi_title = '삭제된 게시물', pi_content = '삭제되었습니다.'
+		WHERE pi_num = #{pi_num} 
+	</update>
+	
+	<insert id="insertReply" parameterType="adminProduct_inq">
+		INSERT INTO product_inq(pi_num, m_num, p_num, pi_title, pi_content,pi_reproot, pi_repstep, pi_emailsend, pi_smssend,pi_secret,pi_state)
+		values(product_inq_seq.nextval,#{m_num},#{p_num}, #{sendTitle}, #{sendContent}, #{pi_num}, 1, 'X','X',#{pi_secret},'X' )
+	</insert>
+	
+	<update id="replyProcess" parameterType="adminProduct_inq">
+		UPDATE product_inq
+		SET pi_state = 'O' WHERE pi_num = #{pi_num}
+	</update>
+	
+	<select id="replyLookup" parameterType="adminProduct_inq" resultType="adminProduct_inq">
+		SELECT pi_title, pi_content 
+		FROM product_inq
+		WHERE pi_reproot = #{pi_num} and pi_repstep = 1
+	</select>
+</mapper>

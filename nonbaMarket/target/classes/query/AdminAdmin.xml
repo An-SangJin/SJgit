@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.admin.admin.dao.AdminAdminDao">
+	
+	<select id="adminList" resultType="adminAdmin">
+		SELECT a_num, a_name, a_nickname, a_id, to_char(a_regdate,'YYYY-MM-DD') as a_regdate
+		FROM admin
+	</select>
+
+</mapper>

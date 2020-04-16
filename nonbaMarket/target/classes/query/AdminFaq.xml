@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.admin.faq.dao.AdminFaqDao">
+	<select id="faqList" parameterType="adminFaq" resultType="adminFaq">
+		SELECT f_num, f_category, f_title, f_content
+		FROM faq
+		<where>
+			<if test="f_category != 'all'">
+				f_category = #{f_category}
+			</if>
+		</where>
+	</select>
+	
+	<delete id="deleteFaq" parameterType="int">
+		DELETE FROM faq
+		WHERE f_num = #{f_num}
+	</delete>
+	
+	<update id="updateFaq" parameterType="adminFaq">
+		UPDATE faq
+		SET f_title = #{f_title}, f_content = #{f_content}, f_category = #{f_category}
+		WHERE f_num = #{f_num}
+	</update>
+	
+	<insert id="insertFaq" parameterType="adminFaq">
+		INSERT INTO faq(f_num, f_category, f_title, f_content)
+		values(faq_seq.nextval, #{f_category}, #{f_title}, #{f_content})
+	</insert>
+</mapper>

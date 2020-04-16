@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.member.dao.MemberDao">
+	<select id="loginCheck" parameterType="member" resultType="int">
+		SELECT NVL((SELECT 1 FROM member WHERE m_id = #{m_id} and m_pwd = #{m_pwd}),0)
+		FROM dual
+	</select>
+	
+	<select id="idCheck" parameterType="member" resultType="int">
+		SELECT NVL((SELECT 1 FROM member WHERE m_id = #{m_id}),0)
+		FROM dual
+	</select>
+	
+	<select id="emailCheck" parameterType="member" resultType="int">
+		SELECT NVL((SELECT 1 FROM member WHERE m_email = #{m_email}
+		<if test="m_num!=0">
+			and m_num != #{m_num}
+		</if>
+		),0)
+		FROM dual
+	</select>
+	
+	<select id="phoneCheck" parameterType="member" resultType="int">
+		SELECT NVL((SELECT 1 FROM member WHERE m_phone = #{m_phone}),0)
+		FROM dual
+	</select>
+	
+	<!-- 회원가입 -->
+	<insert id="memberInsert" parameterType="member">
+		INSERT INTO member( m_num,m_id,m_pwd,m_name,m_email,
+				m_phone,m_home,m_address,m_gender,m_birth,
+				m_emailsend,m_smssend,g_num)
+		values(member_seq.nextval,#{m_id},#{m_pwd},#{m_name},#{m_email},
+				#{m_phone},#{m_home},#{m_address},#{m_gender},#{m_birth},
+				#{m_emailsend},#{m_smssend},1)
+	</insert>
+	
+	<!-- 마이페이지에 뿌릴 멤버 정보 -->
+	<select id="memberInfo" parameterType="member" resultType="member">
+		SELECT m_name, g_percent, g_name, m_point, (SELECT COUNT(*) FROM issue_coupon WHERE m_num = #{m_num} AND i_state = 'X') as coupon_cnt
+		,(SELECT count(*) FROM review WHERE m_num = #{m_num}) as review_cnt,
+		(SELECT COUNT(*) FROM orders WHERE m_num=#{m_num} and o_deliver = '배송중') as bae_cnt
+		FROM member m INNER JOIN grade g
+		ON m.g_num = g.g_num
+		WHERE m_num = #{m_num}
+	</select>
+	
+	<select id="pwdCheck" parameterType="member" resultType="int">
+		SELECT NVL((SELECT 1 FROM member WHERE m_num = #{m_num} and m_pwd = #{m_pwd}),0)
+		FROM dual
+	</select>
+	
+	<select id="memberLookup" parameterType="int" resultType="member">
+		SELECT m_num,m_id, m_pwd, m_name,m_email, m_phone, m_home, m_address, m_gender,m_birth,m_smssend,m_emailsend
+		FROM member WHERE m_num=#{m_num}
+	</select>
+	
+	<update id="memberUpdate" parameterType="member">
+		UPDATE member
+		set 
+		<if test="m_pwd !=''">
+			m_pwd = #{m_pwd},
+		</if>
+		m_name = #{m_name}, m_email = #{m_email}, m_phone = #{m_phone}, m_home = #{m_home},
+		m_gender = #{m_gender}, m_birth = #{m_birth}, m_emailsend = #{m_emailsend},
+		m_smssend = #{m_smssend}
+		WHERE m_num = #{m_num}
+	</update>
+	
+	<update id="withdraw" parameterType="int">
+		UPDATE member
+		set m_withdraw = sysdate WHERE m_num = #{m_num}
+	</update>
+	
+	<select id="userInfo" parameterType="member" resultType="member">
+		SELECT m_num, m_id, m_name FROM member
+		WHERE m_id = #{m_id} and m_pwd= #{m_pwd}
+	</select>
+	
+	<select id="memberData" parameterType="member" resultType="member">
+		select m.m_num, m.m_id, m.m_pwd, m.m_name, m.m_email, m.m_phone,
+		m.m_home, m.m_address, m.m_gender, m.m_birth, m.m_emailsend, 
+		m.m_smssend, m.m_point, m.m_regdate, m.m_update, m.g_num, m.m_withdraw, g.g_percent
+		From member m inner join grade g
+		on m.g_num = g.g_num
+		where m_num = #{m_num}
+	</select>
+	
+	<update id="memberUpdate2" parameterType="member">
+		update member
+		set m_point = #{m_point} where m_num = #{m_num}
+	</update>
+	
+	<select id="phoneCheck2" parameterType="member" resultType="int">
+		select nvl((select 1 from member where m_num=#{m_num}
+		and m_phone=#{m_phone}),0) as result
+		from dual
+	</select>
+</mapper>

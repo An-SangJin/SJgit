@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.admin.coupon.dao.AdminCouponDao">
+	<select id="couponList" parameterType="adminCoupon" resultType="adminCoupon" >
+		SELECT c_num, c_name, c_func, c_percent, to_char(c_expire,'YYYY-MM-DD') as c_expire, a_name
+		FROM coupon c INNER JOIN admin a
+		on a.a_num = c.a_num
+		<where>
+			<if test="c_name != ''">
+				AND c_name like  '%'||#{c_name}||'%'
+			</if>
+			<if test="c_func != '전체' ">
+				AND c_func = #{c_func}
+			</if>
+			<if test="c_percent1 != 0.0 and c_percent2 != 0.0">
+				AND c_percent BETWEEN #{c_percent1} AND #{c_percent2}
+			</if>
+			<if test="c_expire !=''">
+				AND to_char(c_expire,'YYYY-MM-DD') <![CDATA[ <=]]> #{c_expire}
+			</if>
+			<if test="a_num != 0">
+				AND a.a_num = #{a_num}
+			</if>
+		</where>
+		ORDER BY c_num
+	</select>
+	
+	<select id="delIssueList" parameterType="int" resultType="issue_coupon">
+		SELECT i_num FROM issue_coupon WHERE i_num = #{i_num}
+	</select>
+	
+	<update id="deleteOrdersCoupon" parameterType="issue_coupon">
+		UPDATE orders
+		SET i_num = '' WHERE i_num = #{i_num}
+	</update>
+	
+	<delete id="deleteIssueCoupon" parameterType="issue_coupon">
+		DELETE FROM issue_coupon
+		WHERE i_num = #{i_num}
+	</delete>
+	
+	<delete id="deleteCoupon" parameterType="int">
+		DELETE FROM coupon
+		WHERE c_num = #{c_num}
+	</delete>
+	
+	<insert id="insertCoupon" parameterType="adminCoupon">
+		INSERT INTO coupon
+		values(coupon_seq.nextval, #{c_name}, #{c_func}, #{c_percent}, #{c_expire}, #{a_num})
+	</insert>
+</mapper>

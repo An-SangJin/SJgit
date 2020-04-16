@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.product_inq.dao.Product_inqDao">
+	<select id="inqList" parameterType="product_inq" resultType="product_inq">
+		<![CDATA[SELECT rnum,pi_num,m_num,m_name,p_num,pi_title,pi_content,to_char(pi_regdate,'YYYY-MM-DD') pi_regdate,pi_reproot,pi_repstep,pi_emailsend,pi_smssend,pi_secret,pi_state
+		from(SELECT list.*,rownum as rnum from (select
+			p.pi_num,p.m_num,m.m_name as m_name,p.p_num,p.pi_title,p.pi_content,p.pi_regdate,p.pi_reproot,p.pi_repstep,p.pi_emailsend,p.pi_smssend,p.pi_secret,p.pi_state
+		from product_inq p inner join member m on p.m_num = m.m_num where p.p_num = #{p_num} order by to_number(pi_num) desc) list where rownum <= #{pageNum} *#{amount} order by pi_reproot desc,pi_repstep asc)
+			where rnum>(#{pageNum}-#{amount})*10]]>
+	</select>
+	
+	<select id="inqListCnt" parameterType="product_inq" resultType="int">
+		select count(*) from product_inq where p_num = #{p_num}
+	</select>
+	
+	<insert id="productInq" parameterType="product_inq">
+		insert into product_inq(pi_num,m_num,p_num,pi_title,pi_content,pi_reproot,pi_emailsend,pi_smssend,pi_secret,pi_state,pi_repstep)
+		values(product_inq_seq.nextval,#{m_num},#{p_num},#{pi_title},#{pi_content},product_inq_seq.currval,#{pi_emailsend},#{pi_smssend},#{pi_secret},'X',0)
+	</insert>
+	
+	<select id="inqUpdateForm" parameterType="product_inq" resultType="product_inq">
+	 	select * from product_inq where pi_num = #{pi_num}
+	</select>
+	
+	<update id="productInqUpdate" parameterType="product_inq">
+	 	update product_inq set 
+	 	pi_title=#{pi_title},
+	 	pi_content=#{pi_content},
+	 	pi_emailsend=#{pi_emailsend},
+	 	pi_smssend=#{pi_smssend},
+	 	pi_secret=#{pi_secret} where pi_num = #{pi_num}
+	
+	</update>
+	
+	<delete id="productInqDelete" parameterType="product_inq">
+		delete from product_inq where pi_num = #{pi_num}
+	</delete>
+	
+	
+	
+	<select id = "inqList2" parameterType="product_inq" resultType="product_inq">
+	<![CDATA[        
+	select
+	 rnum,pi_num,m_num,p_num,pi_title,pi_content,to_char(pi_regdate,'YYYY-MM-DD') pi_regdate,
+	 pi_reproot,pi_repstep,pi_secret,pi_state,m_id
+     from	
+     (SELECT list.*,rownum as rnum from 
+     (select
+     p.pi_num,p.m_num,p.p_num,p.pi_title,p.pi_content,p.pi_regdate,p.pi_reproot,p.pi_repstep,
+     p.pi_secret,p.pi_state,m_id
+     from 
+     product_inq p inner join member m on p.m_num = m.m_num order by to_number(pi_num) desc) list 
+     where rownum <= #{pageNum} * #{amount} 
+     order by pi_reproot desc,pi_repstep asc)
+     where rnum >  (#{pageNum}-1) * #{amount}
+    ]]>
+	</select>
+		        
+	
+	
+	<!-- 전체 레코드 수 조회 (total) -->
+	<select id = "inq_ListCnt" parameterType="product_inq" resultType="int">
+		select count(*) from product_inq
+	</select>
+	
+	
+	
+</mapper>

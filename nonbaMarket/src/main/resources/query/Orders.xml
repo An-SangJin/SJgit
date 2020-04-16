@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.orders.dao.OrdersDao">
+	<select id="userOrdersInfo" parameterType="member" resultType="orders">
+		SELECT o.o_num, to_char(o_regdate,'YYYY.MM.DD"("HH24"시" MI"분)"') as o_regdate,(select d_img from detail where o_num = o.o_num and rownum=1) as d_img
+		    ,(SELECT d_name FROM detail WHERE o_num=o.o_num and rownum=1) as d_name, (SELECT count(*) FROM detail WHERE o_num=o.o_num) as d_cnt
+		    ,o_allprice,o_deliver
+		FROM orders o inner join detail d on o.o_num = d.o_num  where m_num=#{m_num} group by o.o_num, o_regdate,o_allprice,o_deliver
+		order by o_regdate desc
+	</select>
+	
+	<select id="userOrders" parameterType="int" resultType="orders">
+		select o_num,o_name,o_address,o_phone,o_deliver, o_regdate FROM orders WHERE o_num=#{o_num}
+	</select>
+	
+	<update id="orderCancel" parameterType="int">
+		UPDATE orders
+		SET o_deliver = '환불대기중' WHERE o_num = #{o_num}
+	</update>
+	
+	
+	
+	
+	
+	<select id="ordersData" parameterType="orders" resultType="orders">
+		select o_num, m_num, o_name, o_address, o_phone ,o_method,
+		o_deliver, o_allprice, o_invoice, o_regdate, i_num, o_usepoint
+		from orders where i_num = #{i_num}
+	</select>
+	
+	<select id="ordersList" parameterType="orders" resultType="orders">
+		select o_num, o_name, o_address, o_phone, o_method, o_allprice
+		from orders
+		where o_num = #{o_num}
+	</select>
+	
+	<insert id="ordersInsert" parameterType="orders">
+		<selectKey keyProperty="o_num" resultType="int" order="AFTER">
+			SELECT orders_seq.currval FROM dual
+		</selectKey>
+		insert into orders(o_num, m_num, o_name, o_address, o_phone, o_method,
+		o_allprice, o_usepoint,i_num)
+		values(orders_seq.nextval, #{m_num}, #{o_name}, 
+		#{o_address}, #{o_phone},  #{o_method}, #{o_allprice}, #{o_usepoint},
+		<if test="i_num == 0">
+			''
+		</if>
+		<if test="i_num !=0">
+			#{i_num}
+		</if>
+		)
+	</insert>
+	
+</mapper>

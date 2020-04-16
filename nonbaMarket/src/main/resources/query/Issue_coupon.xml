@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.issue_coupon.dao.Issue_couponDao">
+	
+	<select id="couponList" parameterType="int" resultType="issue">
+		SELECT i_num,c.c_num, c_name, c_func, c_percent, 
+			to_char(i_regdate,'YYYY.MM.DD') as i_regdate, 
+			to_char(c_expire,'YYYY.MM.DD') as c_expire ,i_state 
+		FROM issue_coupon i INNER JOIN coupon c
+		on c.c_num = i.c_num
+		where m_num=#{m_num}
+	</select>
+	
+	<select id="couponList2" parameterType="issue" resultType="issue">
+		select i.i_num, i.c_num, i.m_num, c.c_name, c.c_percent, i.i_state, i.i_regdate
+		from issue_coupon i inner join coupon c
+		on i.c_num = c.c_num
+		where i.m_num = #{m_num}
+	</select>
+	
+	<update id="couponUpdate" parameterType="issue">
+		update issue_coupon
+		set i_state = 'O' where i_num = #{i_num}
+	</update>
+
+</mapper>

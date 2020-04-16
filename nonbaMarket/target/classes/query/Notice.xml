@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.notice.dao.NoticeDao">
+
+	<!--게시판 리스트  기본 조회  -->
+	<select id = "noticeList" parameterType="notice" resultType="notice">
+	<![CDATA[
+		select 
+		n_num,n_title, a_nickname,
+		to_char(n_regdate,'YYYY-MM-DD') as n_regdate,
+		n_cnt,n_content
+		from ( 
+		select /*+ INDEX_DESC(notice NOTICE_PK) */
+        	rownum  as rnum, n_num,n_title, n_content, n_cnt, n_regdate, a_nickname 
+   			from notice inner join admin on notice.a_num = admin.a_num
+    	where ]]>
+    	<![CDATA[ rownum <= #{pageNum} * #{amount}
+			) notice
+			where rnum > (#{pageNum} - 1) * #{amount}
+		]]>
+	</select>
+	
+	<!-- 전체 레코드 수 조회 (total) -->
+	<select id = "noticeListCnt" parameterType="notice" resultType="int">
+		select count(*) from notice
+	</select>
+	
+	<!--조회수  -->
+	<update id="noticeCnt" parameterType="notice">
+		update notice set n_cnt = n_cnt + 1 where n_num= #{n_num}
+	</update>
+	
+
+		
+		
+	
+	
+	
+	
+	
+</mapper>

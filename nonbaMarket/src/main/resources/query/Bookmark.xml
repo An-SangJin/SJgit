@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.bookmark.dao.BookmarkDao">
+	
+	<select id="userBMKList" parameterType="int" resultType="bookmark">
+		SELECT bm_num,b.p_num,p_name,p_img,p_price,b.op_num,m_num, (select op_name FROM p_option where op_num=b.op_num) as op_name,
+			(select op_price FROM p_option where op_num=b.op_num) as op_price
+			FROM bookmark b inner join product p
+			on p.p_num = b.p_num
+			where m_num=#{m_num}
+	</select>
+	<delete id="delBMK" parameterType="bookmark">
+		DELETE FROM bookmark
+		WHERE bm_num = #{bm_num}
+	</delete>
+	
+	
+	<select id="productEnjoy" parameterType="bookmark" resultType="bookmark">
+		select * from bookMark where m_num = #{m_num}
+	</select>
+	
+	<insert id="bookMarkInsert" parameterType="bookmark">
+		insert into bookMark(bm_num,p_num,m_num) values(bookMark_seq.nextval,#{p_num},#{m_num})
+	</insert>
+	<insert id="bookMarkInsert2" parameterType="bookmark">
+		insert into bookMark(bm_num,p_num,op_num,m_num) values(bookMark_seq.nextval,#{p_num},#{op_num},#{m_num})
+	</insert>
+</mapper>

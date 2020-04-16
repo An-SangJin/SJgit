@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.admin.issue_coupon.dao.AdminIssue_couponDao">
+	<select id="issue_couponList" parameterType="issue_coupon" resultType="issue_coupon">
+		select i_num, i.m_num, substr(m_name,1,1)||lpad('*',length(m_name)-2,'*')||substr(m_name,length(m_name),1) as m_name, 
+		substr(m_id,1,1)||lpad('*',length(m_id)-2,'*')||substr(m_id,length(m_id),1) as m_id,
+		to_char(i_regdate,'YYYY-MM-DD') as i_regdate,to_char(c_expire,'YYYY-MM-DD') as c_expire, i_state 
+		FROM issue_coupon i inner join member m
+		on i.m_num=m.m_num
+		inner join coupon c
+		on c.c_num=i.c_num
+		<if test="c_num !=0">
+			WHERE c.c_num = #{c_num}
+		</if>
+	</select>
+	
+	<delete id="deleteIssue_coupon" parameterType="issue_coupon">
+		DELETE FROM issue_coupon
+		WHERE i_num = #{i_num}
+	</delete>
+	
+	<update id="deleteDetailCoupon" parameterType="issue_coupon">
+		UPDATE orders
+		SET i_num = '' WHERE i_num = #{i_num}
+	</update>
+	
+	<insert id="insertIssue_coupon" parameterType="issue_coupon">
+		INSERT INTO issue_coupon(i_num, c_num, m_num, i_state)
+		VALUES(issue_coupon_seq.nextval, #{c_num}, #{m_num}, 'X')
+	</insert>
+</mapper>

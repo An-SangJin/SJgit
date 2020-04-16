@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.basket.dao.BasketDao">
+	<update id="addBasket" parameterType="bookmark">
+		merge into basket
+		using dual
+		on (p_num=#{p_num} and op_num 
+		<if test="op_num == 0">
+			is null)
+		</if>
+		<if test="op_num != 0">
+			= #{op_num})
+		</if>
+		when matched then
+		update set b_amount = b_amount+1 where p_num = #{p_num} and m_num = #{m_num}
+		when not matched then
+		insert (b_num,m_num,p_num,op_num,b_amount,b_price)
+		values(basket_seq.nextval,#{m_num},#{p_num}
+		<if test="op_num==0">
+			,'',
+		</if>
+		<if test="op_num !=0">
+			,#{op_num},
+		</if>
+		1,
+		<if test="op_num == 0">
+			#{p_price})
+		</if>
+		<if test="op_num != 0">
+			#{op_price})
+		</if>
+	</update>
+	
+	
+	
+	
+	<update id="goBasket" parameterType="basket">
+		merge into basket
+      using dual
+      on (p_num=#{p_num} and op_num 
+      <if test="op_num == 0">
+         is null)
+      </if>
+      <if test="op_num != 0">
+         = #{op_num})
+      </if>
+      when matched then
+      update set b_amount = b_amount+#{b_amount} where p_num = #{p_num} and m_num = #{m_num}
+      when not matched then
+      insert (b_num,m_num,p_num,op_num,b_amount,b_price)
+      values(basket_seq.nextval,#{m_num},#{p_num}
+      <if test="op_num==0">
+         ,'',
+      </if>
+      <if test="op_num !=0">
+         ,#{op_num},
+      </if>
+      #{b_amount},
+      <if test="op_num == 0">
+         #{p_price})
+      </if>
+      <if test="op_num != 0">
+         #{op_price})
+      </if>
+	</update>
+
+
+	<select id="basketList" parameterType="basket" resultType="basket">
+      select b.b_num, b.m_num,b.p_num, (select op_num FROM p_option WHERE op_num = b.op_num) as op_num, p.p_img, p.p_name,
+      (select op_name FROM p_option where op_num = b.op_num) as op_name,
+      p.p_sale/100*p.p_price as p_sale, 
+      p.p_price, b.b_amount, b.b_price
+      from basket b inner join product p on b.p_num = p.p_num 
+      where b.m_num = #{m_num} 
+      order by b.b_num desc
+   </select>
+	
+	<update id="basketUpdate" parameterType="basket">
+		update basket
+		set b_amount=#{b_amount} where b_num=#{b_num}
+	</update>
+	
+	<select id="basketTotalList" parameterType="basket" resultType="basket">
+		select b.m_num, sum(b.b_price*b.b_amount) as t_payment, sum(p.p_price*b.b_amount) as t_price
+		from basket b inner join product p
+		on b.p_num = p.p_num
+		where b.m_num = #{m_num}
+		group by b.m_num
+	</select>
+	
+	<delete id="basketDelete" parameterType="basket">
+		delete from basket where b_num = #{b_num}
+	</delete>
+	
+	<!-- 바스켓 컬럼 전체 삭제 -->
+   <delete id="basketAllDelete" parameterType="basket">
+      delete from basket where m_num = #{m_num}
+   </delete>
+</mapper>

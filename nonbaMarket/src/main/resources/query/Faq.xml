@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.faq.dao.FaqDao">
+
+	<sql id="faqSearch">
+			<if test = "search=='f_client'">
+				f_category = '회원문의'
+			</if>
+			<if test = "search=='f_order'">
+				f_category = '주문/결제'
+			</if>
+			<if test = "search=='f_back'">
+				f_category = '교환/반품'
+			</if>
+			<if test = "search=='f_delivery'">
+				f_category = '배송문의'
+			</if>
+			<if test = "search=='f_coupon'">
+				f_category = '쿠폰/적립'
+			</if>
+			<if test = "search=='f_service'">
+				f_category = '서비스이용'
+			</if>	
+	</sql>
+
+
+	<select id="faqList" parameterType="faq" resultType="faq">
+	<![CDATA[
+		select f_num, f_category, f_title,f_content
+		from (
+			select /*+ INDEX_DESC(faq FAQ_PK) */
+				rownum as rnum, f_num, f_category, f_title,f_content
+				from faq 
+			Where ]]>
+			<trim prefix="(" suffix=") AND " prefixOverrides="AND">
+				<include refid="faqSearch"></include>
+			</trim>
+		<![CDATA[ rownum <= #{pageNum} * #{amount}
+			) faq
+			where rnum > (#{pageNum} - 1) * #{amount}
+		]]>
+	</select> 
+	
+	
+
+	<!-- 전체 레코드 수 조회 (total) -->
+	<select id = "faqListCnt" parameterType="faq" resultType="int">
+		select count(*) from faq
+		<trim prefix=" where(" suffix=")">
+			<include refid="faqSearch"></include>
+		</trim>
+	</select>
+
+
+
+</mapper>

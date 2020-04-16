@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.product.dao.ProductDao">
+	<select id="productList" parameterType="product" resultType="product">
+		select * from product
+		<where>
+			<if test="lc_num!=''">
+				lc_num = #{lc_num}
+			</if>
+			<if test="mc_num!=''">
+				mc_num = #{mc_num}
+			</if>
+		</where>
+	</select>
+	<select id="mcList" parameterType="String" resultType="mc_category">
+		select mc_name,mc_num from mid_category where lc_num = #{cate}
+	</select>
+	<select id="lcName" parameterType="String" resultType="String">
+		select lc_name from large_category where lc_num = #{name}
+
+	</select>
+	<!-- <select id="lcNum" parameterType="int" resultType="String">
+		select lc_name from large_category where lc_num = #{name}
+
+	</select> -->
+	
+	<select id="productDetail" parameterType="product" resultType="product">
+		select * from product where p_num = #{p_num}
+	</select>
+	
+	<select id="productOption" parameterType="p_option" resultType="p_option">
+		select * from p_option where p_num = #{p_num}
+	</select>
+	
+	<select id="newProduct" resultType="product">
+		select * from product where p_regdate between (sysdate-30) and sysdate order by p_regdate desc
+	</select>
+	
+	<select id="bestProduct" resultType="product">
+		select
+		p.p_num,lc_num,mc_num,p_name,p_price,p_explain_img,p_img,p_regdate,p_option,sales_unit,p_weight,p_origin,p_announce,p_stock,p_sale,p_display,
+		count(p.p_num) cnt from detail d inner join product p on p.p_num=d.p_num inner join orders o on o.o_num=d.o_num 
+		where o_deliver='배송완료'
+		group by p.p_num,lc_num,mc_num,p_name,p_price,p_explain_img,p_img,p_regdate,p_option,sales_unit,p_weight,p_origin,p_announce,p_stock,p_sale,p_display order by cnt desc
+	</select>
+	
+	<select id="saleProduct" resultType="product">
+		select * from product where p_sale!=0
+	</select>
+	
+	<select id="mainNewProduct" resultType="product">
+		select * from (select row_number() over(order by p_regdate desc)as num,a.* from product a) where <![CDATA[num<=4]]> order by p_regdate desc
+	</select>
+	
+	<select id="midCategory" parameterType="String" resultType="mc_category">
+		select * from mid_category where lc_num=#{lc_num}
+	</select>
+	<select id="largeCategory" resultType="lc_category">
+		select * from large_category order by lc_num asc
+	</select>
+	
+	<select id="memberNumber" resultType="int" parameterType="String">
+		select m_num from member where m_id = #{id}
+	</select>
+	
+	<select id="reviewCheck" resultType="int" parameterType="com.spring.common.vo.CommonVO">
+		select nvl((select 1 from orders o inner join detail p on o.o_num = p.o_num where o.m_num = #{m_num} and p.p_num = #{p_num} group by 1),0) as re from dual
+		
+	</select>
+	
+	<select id="reviewUpdate" resultType="int" parameterType="String">
+		select m_num from member where m_id = #{m_id}
+	</select>
+	
+</mapper>

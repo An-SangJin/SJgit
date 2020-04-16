@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+  "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+  "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	<definition name="intro" template="/WEB-INF/views/template/client/maintemplate.jsp">
+		<put-attribute name="title" value="논바마켓"/>
+		<put-attribute name="header" value="/WEB-INF/views/template/client/header.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/views/template/client/footer.jsp"/>
+	</definition>
+	
+	<definition name="content" template="/WEB-INF/views/template/client/contents.jsp">
+		<put-attribute name="title" value="논바마켓"/>
+		<put-attribute name="header" value="/WEB-INF/views/template/client/header.jsp"/>
+		<put-attribute name="body" value=""/>
+		<put-attribute name="footer" value="/WEB-INF/views/template/client/footer.jsp"/>
+	</definition>
+	
+	<definition name="member/*" extends="content">
+		<put-attribute name="title" value="5252"/>
+		<put-attribute name="body" value="/WEB-INF/views/member/{1}.jsp"/>
+	</definition>
+	
+	<definition name="myPage" template="/WEB-INF/views/template/client/myPageTemplate.jsp">
+		<put-attribute name="title" value="논바마켓"/>
+		<put-attribute name="header" value="/WEB-INF/views/template/client/header.jsp"/>
+		<put-attribute name="body" value=""/>
+		<put-attribute name="footer" value="/WEB-INF/views/template/client/footer.jsp"/>
+	</definition>
+	
+	<definition name="myPage/*" extends="myPage">
+		<put-attribute name="body" value="/WEB-INF/views/member/{1}.jsp"/>
+	</definition>
+	
+	<definition name="product/*" extends="content">
+		<put-attribute name="title" value=""/>
+		<put-attribute name="body" value="/WEB-INF/views/product/{1}.jsp"/>		
+	</definition>
+	
+	<definition name="basket/*" extends="content">
+		<put-attribute name="title" value="장바구니" />
+		<put-attribute name="body" value="/WEB-INF/views/basket/{1}.jsp" />
+	</definition>
+	
+	<definition name="orders/*" extends="content">
+		<put-attribute name="title" value="주문하기" />
+		<put-attribute name="body" value="/WEB-INF/views/orders/{1}.jsp" />
+	</definition>
+	
+	
+	<definition name = "boards/*" extends="content">
+  			<put-attribute name="title" value="고객 센터" /> 
+  			<put-attribute name="body" value = "/WEB-INF/views/boards/{1}.jsp" />
+	</definition>
+</tiles-definitions>

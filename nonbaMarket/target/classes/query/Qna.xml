@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.qna.dao.QnaDao">
+
+
+	<select id="qnaList" parameterType="qna" resultType="qna">
+		<![CDATA[
+		select 
+		q_num, q_category, q_title,q_content,q_state, q_attimg
+		from ( 
+		select /*+ INDEX_DESC(qna QNA_PK) */
+        	rownum as rnum, q_num, q_category, q_title,q_content,q_state,q_attimg
+   			from qna
+    	where m_num = #{m_num} and ]]>
+    		
+    	<![CDATA[ rownum <= #{pageNum} * #{amount}
+			) qna
+			where rnum > (#{pageNum} - 1) * #{amount}
+		]]>
+	</select>
+
+	
+
+	<select id = "qnaListCnt" parameterType="qna" resultType="int">
+		select count(*) from qna where m_num = #{m_num}
+	</select>
+
+	<select id = "emailphone" parameterType = "member" resultType="member">
+		select m_email, m_phone
+		from member where m_num=#{m_num}
+	</select>
+
+
+	<select id = "qnaInsert" parameterType="qna" resultType="qna">
+		select o.o_num,to_char(o_regdate,'YYYY-MM-DD') as o_regdate,d_name, d_amount,d_amount*d_price as d_price
+		from orders o inner join detail d
+		on d.o_num = o.o_num
+		where m_num=#{m_num} order by o_num desc
+	</select>
+
+
+	<insert id ="qnaupload" parameterType="qna">
+		<selectKey keyProperty="q_num" resultType="int" order="BEFORE">
+			select qna_seq.nextval from dual 
+		</selectKey>
+		insert into qna(q_num,m_num,o_num,q_category,q_title,q_email,q_phone,q_content,q_attimg,q_emailsend,q_smssend,q_state)
+		values(#{q_num}, #{m_num}, 
+		<if test="o_num==0">
+			''
+		</if>
+		<if test="o_num!=0">
+			#{o_num}
+		</if>
+		, #{q_category}, #{q_title},#{q_email},#{q_phone},#{q_content},#{q_attimg},#{q_emailsend},#{q_smssend},'X')
+	</insert>
+	
+	<select id="qinfo" parameterType="qna" resultType="qna">
+		select q_num,o_num, q_category, q_email, q_phone, q_title, q_content from qna where q_num = #{q_num}
+	</select>
+
+
+	<update id="qnaUpdate" parameterType="qna">
+		update qna
+		set 
+			<if test="o_num==0">
+			o_num='',
+			</if>
+			<if test="o_num!=0">
+			o_num=#{o_num},
+			</if>
+			q_category = #{q_category},
+			q_title = #{q_title},
+			q_email = #{q_email},
+			q_phone = #{q_phone},
+			q_content = #{q_content},
+			q_attimg = #{q_attimg},
+			q_emailsend = #{q_emailsend},
+			q_smssend = #{q_smssend}
+		where
+			q_num = #{q_num}
+	</update>
+	
+	
+		<delete id="qnaDelete" parameterType="int">
+			delete from qna where q_num = #{q_num}
+		</delete>
+
+
+
+</mapper>

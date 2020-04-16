@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.client.detail.dao.DetailDao">
+	<select id="getDetail" parameterType="int" resultType="detail">
+		select o_num,p_name, p.p_num, op_num, d_name,d_img,d_amount,d_price,ans_state FROM detail d inner join product p
+		on p.p_num=d.p_num
+		WHERE o_num=#{o_num}
+	</select>
+	
+	<select id="reviewBeforeList" parameterType="int" resultType="detail">
+		SELECT d_num,d.p_num, p_name, op_num,(select op_name FROM p_option WHERE op_num = d.op_num ) as op_name,
+		d_price,d_img,(SELECT to_char(o_regdate,'YYYY.MM.DD') FROM orders WHERE o_num=d.o_num) as o_regdate
+		FROM detail d inner join product p
+		on d.p_num = p.p_num
+		inner join orders o
+		on o.o_num = d.o_num
+		where ans_state='X' and m_num=#{m_num}
+		ORDER BY d_num desc
+	</select>
+	
+	<select id="reviewCnt" parameterType="int" resultType="detail">
+		SELECT
+		    (SELECT COUNT(*) FROM review WHERE m_num=#{m_num}) as cnt_o,
+		    (SELECT COUNT(ans_state) FROM detail WHERE o_num IN (SELECT o_num FROM orders WHERE m_num=#{m_num}) and ans_state='X') as cnt_x
+		FROM dual
+	</select>
+	
+	<update id="reviewAfterUpdate" parameterType="int">
+		UPDATE detail
+		SET ans_state = 'O' WHERE d_num = #{d_num}
+	</update>
+	
+	<insert id="insertDetail" parameterType="detail">
+		INSERT INTO detail(d_num, o_num, p_num, op_num, d_name, d_img, d_amount, d_price, ans_state)
+		VALUES(detail_seq.nextval, #{o_num}, #{p_num}, 
+		<if test="op_num == 0">
+			''
+		</if>
+		<if test="op_num != 0">
+			#{op_num}
+		</if>
+		, #{d_name}, #{d_img}, #{d_amount}, #{d_price}, 'X')
+	</insert>
+</mapper>

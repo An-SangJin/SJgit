@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.spring.client.member.vo.MemberVO" alias="member"/>
+		<typeAlias type="com.spring.client.orders.vo.OrdersVO" alias="orders"/>
+		<typeAlias type="com.spring.client.detail.vo.DetailVO" alias="detail"/>
+		<typeAlias type="com.spring.client.bookmark.vo.BookmarkVO" alias="bookmark"/>		
+		<typeAlias type="com.spring.client.basket.vo.BasketVO" alias="basket"/>		
+		<typeAlias type="com.spring.client.review.vo.ReviewVO" alias="review"/>
+		<typeAlias type="com.spring.client.pointstatus.vo.PointStatusVO" alias="point"/>
+		<typeAlias type="com.spring.client.issue_coupon.vo.Issue_couponVO" alias="issue"/>
+		
+		
+		<typeAlias type="com.spring.client.product.vo.ProductVO" alias="product"/>
+		<typeAlias type="com.spring.client.product.vo.Mc_categoryVO" alias="mc_category"/>
+		<typeAlias type="com.spring.client.product.vo.P_optionVO" alias="p_option"/>
+		<typeAlias type="com.spring.client.product.vo.Large_categoryVO" alias="lc_category"/>
+		<typeAlias type="com.spring.client.product_inq.vo.Product_inqVO" alias="product_inq"/>
+		<typeAlias type="com.spring.client.card.vo.CardVO" alias="card"/>
+		
+		
+		<typeAlias type="com.spring.client.notice.vo.NoticeVO" alias="notice"/> 
+		<typeAlias type="com.spring.client.faq.vo.FaqVO" alias="faq"/>
+		<typeAlias type="com.spring.client.qna.vo.QnaVO" alias="qna"/>
+		
+		
+		
+		
+		
+		<typeAlias type="com.spring.admin.login.vo.AdminLoginVO" alias="admin"/>
+		
+		<typeAlias type="com.spring.admin.order.vo.AdminOrdersVO" alias="adminorder"/>
+		
+		<typeAlias type="com.spring.admin.product.vo.AdminProductVO" alias="adminproduct"/>
+		
+		<typeAlias type="com.spring.admin.large_category.vo.AdminLarge_CategoryVO" alias="adminlarge"/>
+		
+		<typeAlias type="com.spring.admin.mid_category.vo.AdminMid_CategoryVO" alias="adminmid"/>
+		
+		<typeAlias type="com.spring.admin.p_option.vo.AdminP_OptionVO" alias="adminoption"/>
+		
+		<typeAlias type="com.spring.admin.detail.vo.AdminDetailVO" alias="admindetail"/>
+		
+		<typeAlias type="com.spring.admin.member.vo.AdminMemberVO" alias="adminmember"/>
+		
+		<typeAlias type="com.spring.admin.login.vo.AdminLoginVO" alias="adminlogin"/>
+		
+		<typeAlias type="com.spring.admin.coupon.vo.AdminCouponVO" alias="adminCoupon"/>
+		
+		<typeAlias type="com.spring.admin.issue_coupon.vo.AdminIssue_couponVO" alias="issue_coupon"/>
+		
+		<typeAlias type="com.spring.admin.notice.vo.AdminNoticeVO" alias="adminNotice"/>
+		
+		<typeAlias type="com.spring.admin.faq.vo.AdminFaqVO" alias="adminFaq"/>
+
+		<typeAlias type="com.spring.admin.qna.vo.AdminQnaVO" alias="adminQna"/>
+
+		<typeAlias type="com.spring.admin.review.vo.AdminReviewVO" alias="adminReview"/>
+		
+		<typeAlias type="com.spring.admin.product_inq.vo.AdminProduct_inqVO" alias="adminProduct_inq"/>
+		
+		<typeAlias type="com.spring.admin.admin.vo.AdminAdminVO" alias="adminadmin"/>
+	</typeAliases>
+</configuration>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.admin.notice.dao.AdminNoticeDao">
+	<select id="noticeList" parameterType="adminNotice" resultType="adminNotice">
+		SELECT n_num,n.a_num, a_name, n_title, n_content, n_cnt, to_char(n_regdate,'YYYY-MM-DD') as n_regdate
+		FROM notice n INNER JOIN admin a
+		on a.a_num = n.a_num
+		<where>
+			<if test="search == 'n_title'">
+				n_title like '%'||#{keyword}||'%'
+			</if>
+			<if test="search == 'a_name'">
+				a_name like '%'||#{keyword}||'%'
+			</if>
+			<if test="search == 'n_regdate'">
+				to_char(n_regdate,'YYYY-MM-DD') = #{keyword}
+			</if>
+			<if test="search == 'n_content'">
+				n_title like '%'||#{keyword}||'%'
+			</if>
+		</where>
+	</select>
+	
+	<delete id="deleteNotice" parameterType="int">
+		DELETE FROM notice
+		WHERE n_num = #{n_num}
+	</delete>
+	
+	<update id="updateNotice" parameterType="adminNotice">
+		UPDATE notice
+		SET n_title = #{n_title}, n_content = #{n_content}
+		WHERE n_num = #{n_num}
+	</update>
+	
+	<insert id="insertNotice" parameterType="adminNotice">
+		INSERT INTO notice(n_num, a_num, n_title, n_content)
+		values(notice_seq.nextval,#{a_num},#{n_title},#{n_content})
+	</insert>
+</mapper>
