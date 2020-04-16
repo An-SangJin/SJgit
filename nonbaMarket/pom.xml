@@ -126,7 +126,7 @@
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
 		    <artifactId>jackson-databind</artifactId>
-		    <version>2.9.4</version>
+		    <version>2.9.10.3</version>
 		</dependency>
 		
 		<!--jxls 라이브러리는 poi 패키지를 기반으로 동작하기 때문에 jxls 라이브러리 사용시 poi 라이브러리도 함께 사용해야함 -->
